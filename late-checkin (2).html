@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>เช็คชื่อนักเรียนมาสาย ม.6 ทศ.๔ (เพาะชำ)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&family=Sarabun:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFFCF6;
+    --surface:#FFFFFF;
+    --orange:#E8672B;
+    --orange-dark:#C2501C;
+    --orange-tint:#FDECE1;
+    --green:#1F7A4D;
+    --green-dark:#155C39;
+    --green-tint:#E7F3EC;
+    --text:#2A2118;
+    --text-soft:#7A6C5D;
+    --border:#EDE2D3;
+    --danger:#B23A2E;
+    --radius-s:8px;
+    --radius-m:14px;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Sarabun',sans-serif;
+    font-size:15px;
+    line-height:1.55;
+    min-height:100vh;
+  }
+  h1,h2,h3,.brand,.nav-item span,.stat-num{font-family:'Kanit',sans-serif;}
+  button{font-family:inherit;}
+  input,select{font-family:inherit;}
+
+  /* ---------- Login ---------- */
+  .login-wrap{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+    background:
+      radial-gradient(circle at 12% 18%, rgba(232,103,43,0.10), transparent 42%),
+      radial-gradient(circle at 88% 82%, rgba(31,122,77,0.12), transparent 46%),
+      var(--bg);
+  }
+  .login-card{
+    width:100%;
+    max-width:380px;
+    background:var(--surface);
+    border-radius:var(--radius-m);
+    border:1px solid var(--border);
+    padding:36px 32px 32px;
+    box-shadow:0 18px 40px -22px rgba(42,33,24,0.28);
+  }
+  .login-badge{
+    width:52px;height:52px;border-radius:14px;
+    background:linear-gradient(135deg,var(--orange),var(--orange-dark));
+    display:flex;align-items:center;justify-content:center;
+    margin-bottom:18px;
+  }
+  .login-badge svg{width:26px;height:26px;stroke:#fff;}
+  .login-card h1{
+    font-size:20px;font-weight:600;margin:0 0 4px;line-height:1.35;
+  }
+  .login-card p.sub{
+    color:var(--text-soft);font-size:13.5px;margin:0 0 26px;
+  }
+  .field{margin-bottom:16px;}
+  .field label{
+    display:block;font-size:13px;color:var(--text-soft);margin-bottom:6px;font-weight:500;
+  }
+  .field input{
+    width:100%;padding:11px 13px;border-radius:var(--radius-s);
+    border:1.5px solid var(--border);background:#FFFEFC;
+    font-size:15px;color:var(--text);outline:none;
+    transition:border-color .15s;
+  }
+  .field input:focus{border-color:var(--green);}
+  .btn{
+    appearance:none;border:none;cursor:pointer;border-radius:var(--radius-s);
+    font-weight:600;font-size:14.5px;padding:11px 18px;transition:transform .08s, opacity .15s, background .15s;
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  }
+  .btn:active{transform:scale(0.98);}
+  .btn-primary{background:var(--green);color:#fff;width:100%;padding:12px;}
+  .btn-primary:hover{background:var(--green-dark);}
+  .btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text);}
+  .btn-outline:hover{border-color:var(--text-soft);}
+  .btn-danger-ghost{background:transparent;color:var(--danger);border:1px solid transparent;}
+  .btn-danger-ghost:hover{background:#FBEAE7;}
+  .login-error{
+    background:#FBEAE7;color:var(--danger);font-size:13px;padding:10px 12px;
+    border-radius:var(--radius-s);margin-bottom:16px;display:none;
+  }
+  .login-hint{margin-top:18px;font-size:12px;color:var(--text-soft);text-align:center;}
+
+  /* ---------- App shell ---------- */
+  #app-shell{display:none;min-height:100vh;flex-direction:column;}
+  header.top{
+    background:linear-gradient(120deg,var(--orange) 0%,var(--orange-dark) 100%);
+    color:#fff;padding:18px 22px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    flex-wrap:wrap;
+  }
+  header.top .title-block{display:flex;align-items:center;gap:12px;min-width:0;}
+  header.top .title-icon{
+    width:40px;height:40px;border-radius:11px;background:rgba(255,255,255,0.18);
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  }
+  header.top .title-icon svg{width:21px;height:21px;stroke:#fff;}
+  header.top h1{font-size:15.5px;font-weight:600;margin:0;line-height:1.4;}
+  header.top .subtitle{font-size:12px;opacity:.88;margin-top:1px;}
+  header.top .top-right{display:flex;align-items:center;gap:10px;}
+  .clock-pill{
+    background:rgba(255,255,255,0.16);padding:7px 13px;border-radius:20px;
+    font-size:12.5px;font-family:'Kanit',sans-serif;letter-spacing:.2px;
+  }
+  .logout-btn{
+    background:rgba(255,255,255,0.14);color:#fff;border:1px solid rgba(255,255,255,0.35);
+    padding:8px 14px;border-radius:20px;font-size:13px;
+  }
+  .logout-btn:hover{background:rgba(255,255,255,0.24);}
+
+  nav.tabs{
+    display:flex;gap:4px;background:var(--surface);border-bottom:1px solid var(--border);
+    padding:0 16px;overflow-x:auto;
+  }
+  .nav-item{
+    display:flex;align-items:center;gap:7px;padding:13px 14px;cursor:pointer;
+    border-bottom:2.5px solid transparent;color:var(--text-soft);white-space:nowrap;
+    font-size:14px;font-weight:500;user-select:none;
+  }
+  .nav-item svg{width:17px;height:17px;stroke:currentColor;flex-shrink:0;}
+  .nav-item.active{color:var(--green-dark);border-bottom-color:var(--green);}
+  .nav-item:hover:not(.active){color:var(--text);}
+
+  main{flex:1;max-width:980px;width:100%;margin:0 auto;padding:22px 18px 60px;}
+  .panel{display:none;}
+  .panel.active{display:block;}
+
+  .card{
+    background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-m);
+    padding:22px;margin-bottom:18px;
+  }
+  .card.accent-green{border-left:4px solid var(--green);}
+  .card.accent-orange{border-left:4px solid var(--orange);}
+  .card h2{font-size:16.5px;margin:0 0 4px;font-weight:600;}
+  .card .card-sub{font-size:13px;color:var(--text-soft);margin:0 0 18px;}
+
+  .form-row{display:flex;gap:12px;flex-wrap:wrap;}
+  .form-row .field{flex:1;min-width:150px;margin-bottom:0;}
+  .checkin-form{display:flex;flex-direction:column;gap:14px;}
+
+  .toast{
+    position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(20px);
+    background:var(--green-dark);color:#fff;padding:12px 20px;border-radius:24px;
+    font-size:13.5px;box-shadow:0 12px 28px -10px rgba(0,0,0,0.35);
+    opacity:0;pointer-events:none;transition:opacity .25s, transform .25s;
+    z-index:50;display:flex;align-items:center;gap:8px;
+  }
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+  .toast.err{background:var(--danger);}
+
+  table{width:100%;border-collapse:collapse;font-size:14px;}
+  thead th{
+    text-align:left;font-size:12px;color:var(--text-soft);font-weight:600;
+    padding:8px 10px;border-bottom:1.5px solid var(--border);
+  }
+  tbody td{padding:10px 10px;border-bottom:1px solid var(--border);vertical-align:middle;}
+  tbody tr:last-child td{border-bottom:none;}
+  .badge-late{
+    display:inline-block;background:var(--orange-tint);color:var(--orange-dark);
+    font-size:12px;padding:3px 9px;border-radius:20px;font-weight:600;
+  }
+  .row-actions{display:flex;gap:6px;justify-content:flex-end;}
+  .icon-btn{
+    background:transparent;border:1px solid var(--border);border-radius:7px;
+    width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;
+    cursor:pointer;color:var(--text-soft);
+  }
+  .icon-btn:hover{border-color:var(--danger);color:var(--danger);}
+  .icon-btn svg{width:14px;height:14px;stroke:currentColor;}
+
+  .empty-state{
+    text-align:center;padding:40px 20px;color:var(--text-soft);
+  }
+  .empty-state svg{width:38px;height:38px;stroke:var(--border);margin-bottom:10px;}
+  .empty-state p{margin:0;font-size:13.5px;}
+
+  .filter-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px;}
+  .filter-bar .field{margin-bottom:0;min-width:140px;flex:1;}
+  .filter-bar .field.grow{flex:2;min-width:180px;}
+
+  .stat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:18px;}
+  .stat-box{background:var(--green-tint);border-radius:var(--radius-s);padding:16px 18px;}
+  .stat-box.orange{background:var(--orange-tint);}
+  .stat-num{font-size:26px;font-weight:600;color:var(--green-dark);line-height:1.1;}
+  .stat-box.orange .stat-num{color:var(--orange-dark);}
+  .stat-label{font-size:12.5px;color:var(--text-soft);margin-top:4px;}
+
+  .student-row{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    padding:11px 4px;border-bottom:1px solid var(--border);
+  }
+  .student-row:last-child{border-bottom:none;}
+  .student-info .name{font-weight:500;font-size:14.5px;}
+  .student-info .meta{font-size:12px;color:var(--text-soft);margin-top:1px;}
+  .count-chip{
+    font-size:11.5px;background:var(--bg);border:1px solid var(--border);color:var(--text-soft);
+    padding:2px 8px;border-radius:10px;margin-left:8px;
+  }
+
+  .datetime-preview{
+    font-size:13px;color:var(--text-soft);background:var(--bg);border:1px dashed var(--border);
+    border-radius:var(--radius-s);padding:9px 12px;
+  }
+  .datetime-preview b{color:var(--text);}
+
+  .loading-block{padding:50px 0;text-align:center;color:var(--text-soft);font-size:13.5px;}
+  .spinner{
+    width:22px;height:22px;border:2.5px solid var(--border);border-top-color:var(--green);
+    border-radius:50%;margin:0 auto 12px;animation:spin .7s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  @media (max-width:640px){
+    header.top{padding:14px 16px;}
+    header.top h1{font-size:14px;}
+    main{padding:16px 12px 50px;}
+    .card{padding:16px;}
+    table thead{display:none;}
+    tbody tr{display:block;border-bottom:1px solid var(--border);padding:10px 2px;}
+    tbody td{display:flex;justify-content:space-between;gap:12px;border-bottom:none;padding:5px 8px;text-align:right;}
+    tbody td::before{content:attr(data-label);color:var(--text-soft);font-size:12px;text-align:left;}
+    tbody tr td:last-child{padding-top:8px;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ LOGIN SCREEN ============ -->
+<div class="login-wrap" id="loginWrap">
+  <div class="login-card">
+    <div class="login-badge">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 8l10 5 10-5-10-5Z"/><path d="M6 10.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-5.5"/></svg>
+    </div>
+    <h1>เช็คชื่อนักเรียนมาสาย</h1>
+    <p class="sub">สายชั้น ม.6 · โรงเรียนเทศบาล ๔ (เพาะชำ)</p>
+    <div class="login-error" id="loginError">ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง</div>
+    <div class="field">
+      <label for="loginUser">ชื่อผู้ใช้</label>
+      <input id="loginUser" type="text" autocomplete="username" placeholder="กรอกชื่อผู้ใช้">
+    </div>
+    <div class="field">
+      <label for="loginPass">รหัสผ่าน</label>
+      <input id="loginPass" type="password" autocomplete="current-password" placeholder="กรอกรหัสผ่าน">
+    </div>
+    <button class="btn btn-primary" id="loginBtn">เข้าสู่ระบบ</button>
+    <p class="login-hint">ระบบนี้ใช้ร่วมกันได้ทั้งคอมพิวเตอร์ มือถือ Android และ iPhone</p>
+  </div>
+</div>
+
+<!-- ============ APP SHELL ============ -->
+<div id="app-shell">
+  <header class="top">
+    <div class="title-block">
+      <div class="title-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3 2 8l10 5 10-5-10-5Z"/><path d="M6 10.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-5.5"/></svg>
+      </div>
+      <div style="min-width:0;">
+        <h1>เช็คชื่อนักเรียนมาสาย ม.6</h1>
+        <div class="subtitle">โรงเรียนเทศบาล ๔ (เพาะชำ)</div>
+      </div>
+    </div>
+    <div class="top-right">
+      <div class="clock-pill" id="clockPill">--:--</div>
+      <button class="logout-btn" id="logoutBtn">ออกจากระบบ</button>
+    </div>
+  </header>
+
+  <nav class="tabs">
+    <div class="nav-item active" data-tab="checkin">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>
+      <span>บันทึกมาสาย</span>
+    </div>
+    <div class="nav-item" data-tab="history">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 7v5l3 3"/></svg>
+      <span>ประวัติย้อนหลัง</span>
+    </div>
+    <div class="nav-item" data-tab="students">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/><path d="M22 20v-2a4 4 0 0 0-3-3.9"/><path d="M16 3.1a4 4 0 0 1 0 7.8"/></svg>
+      <span>รายชื่อนักเรียน</span>
+    </div>
+    <div class="nav-item" data-tab="stats">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><rect x="7" y="12" width="3" height="6"/><rect x="12" y="8" width="3" height="10"/><rect x="17" y="5" width="3" height="13"/></svg>
+      <span>สรุปสถิติ</span>
+    </div>
+  </nav>
+
+  <main>
+    <div id="loadingBlock" class="loading-block">
+      <div class="spinner"></div>
+      กำลังโหลดข้อมูล...
+    </div>
+
+    <!-- ---- CHECK-IN PANEL ---- -->
+    <div class="panel" id="panel-checkin">
+      <div class="card accent-green">
+        <h2>บันทึกนักเรียนมาสาย</h2>
+        <p class="card-sub">พิมพ์หรือเลือกชื่อนักเรียน ระบบจะใส่เวลาปัจจุบันให้อัตโนมัติ และสามารถแก้ไขวันที่-เวลาได้เอง</p>
+        <div class="checkin-form">
+          <div class="form-row">
+            <div class="field" style="flex:2;">
+              <label for="ciName">ชื่อนักเรียน</label>
+              <input list="studentNames" id="ciName" placeholder="พิมพ์ชื่อนักเรียน...">
+              <datalist id="studentNames"></datalist>
+            </div>
+            <div class="field">
+              <label for="ciDate">วันที่</label>
+              <input type="date" id="ciDate">
+            </div>
+            <div class="field">
+              <label for="ciTime">เวลาที่มาสาย</label>
+              <input type="time" id="ciTime">
+            </div>
+          </div>
+          <div class="datetime-preview" id="ciPreview">จะบันทึกว่า: —</div>
+          <div>
+            <button class="btn btn-primary" style="width:auto;padding:11px 24px;" id="ciSubmit">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+              บันทึกมาสาย
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>มาสายวันนี้</h2>
+        <p class="card-sub" id="todayCountLabel">ยังไม่มีรายการวันนี้</p>
+        <div id="todayList"></div>
+      </div>
+    </div>
+
+    <!-- ---- HISTORY PANEL ---- -->
+    <div class="panel" id="panel-history">
+      <div class="card">
+        <h2>ประวัติการมาสาย</h2>
+        <p class="card-sub">ค้นหาและกรองย้อนหลังตามชื่อหรือช่วงวันที่</p>
+        <div class="filter-bar">
+          <div class="field grow">
+            <label>ค้นหาชื่อ</label>
+            <input type="text" id="hSearch" placeholder="พิมพ์ชื่อนักเรียน...">
+          </div>
+          <div class="field">
+            <label>ตั้งแต่วันที่</label>
+            <input type="date" id="hFrom">
+          </div>
+          <div class="field">
+            <label>ถึงวันที่</label>
+            <input type="date" id="hTo">
+          </div>
+          <div class="field" style="flex:0 0 auto;align-self:flex-end;">
+            <button class="btn btn-outline" id="hClear">ล้างตัวกรอง</button>
+          </div>
+        </div>
+        <div id="historyTableWrap"></div>
+      </div>
+    </div>
+
+    <!-- ---- STUDENTS PANEL ---- -->
+    <div class="panel" id="panel-students">
+      <div class="card accent-orange">
+        <h2>เพิ่มรายชื่อนักเรียน</h2>
+        <p class="card-sub">เพิ่มชื่อไว้ล่วงหน้าเพื่อให้เลือกได้เร็วตอนบันทึกมาสาย</p>
+        <div class="form-row" style="margin-bottom:8px;">
+          <div class="field" style="flex:2;">
+            <label for="stName">ชื่อ-นามสกุล</label>
+            <input type="text" id="stName" placeholder="เช่น เด็กชายสมชาย ใจดี">
+          </div>
+          <div class="field">
+            <label for="stRoom">ห้อง</label>
+            <input type="text" id="stRoom" placeholder="เช่น ม.6/1">
+          </div>
+          <div class="field">
+            <label for="stNo">เลขที่</label>
+            <input type="text" id="stNo" placeholder="เช่น 12">
+          </div>
+        </div>
+        <button class="btn btn-primary" style="width:auto;padding:11px 24px;" id="stSubmit">เพิ่มนักเรียน</button>
+      </div>
+
+      <div class="card">
+        <h2>รายชื่อทั้งหมด</h2>
+        <div class="filter-bar" style="margin-bottom:10px;">
+          <div class="field grow">
+            <input type="text" id="stSearch" placeholder="ค้นหารายชื่อ...">
+          </div>
+        </div>
+        <div id="studentListWrap"></div>
+      </div>
+    </div>
+
+    <!-- ---- STATS PANEL ---- -->
+    <div class="panel" id="panel-stats">
+      <div class="card">
+        <h2>สรุปภาพรวม</h2>
+        <div class="stat-grid" id="statGrid"></div>
+      </div>
+      <div class="card">
+        <h2>จำนวนครั้งที่มาสายต่อคน</h2>
+        <p class="card-sub">เรียงจากมากไปน้อย</p>
+        <div id="statTableWrap"></div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  var AUTH_USER = "project";
+  var AUTH_PASS = "project6262";
+  var isLoggedIn = false;
+
+  var students = [];
+  var records = [];
+  var dataLoaded = false;
+
+  var THAI_MONTHS = ["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฎาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"];
+  var THAI_DAYS = ["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัสบดี","ศุกร์","เสาร์"];
+
+  function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+  function pad(n){ return n < 10 ? "0"+n : ""+n; }
+  function todayISO(){ var d = new Date(); return d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()); }
+  function nowHM(){ var d = new Date(); return pad(d.getHours())+":"+pad(d.getMinutes()); }
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c];
+    });
+  }
+  function thaiDate(iso){
+    if(!iso) return "-";
+    var parts = iso.split("-");
+    var y = parseInt(parts[0],10), m = parseInt(parts[1],10), d = parseInt(parts[2],10);
+    var dObj = new Date(y, m-1, d);
+    return THAI_DAYS[dObj.getDay()] + " " + d + " " + THAI_MONTHS[m-1] + " " + (y+543);
+  }
+  function thaiDateShort(iso){
+    if(!iso) return "-";
+    var parts = iso.split("-");
+    var y = parseInt(parts[0],10), m = parseInt(parts[1],10), d = parseInt(parts[2],10);
+    return d + " " + THAI_MONTHS[m-1] + " " + (y+543);
+  }
+
+  function showToast(msg, isErr){
+    var t = document.getElementById("toast");
+    t.textContent = msg;
+    t.className = "toast show" + (isErr ? " err" : "");
+    clearTimeout(t._timer);
+    t._timer = setTimeout(function(){ t.className = "toast"; }, 2600);
+  }
+
+  // ---------------- storage ----------------
+  async function loadData(){
+    try{
+      var s = await window.storage.get("students", true);
+      students = s && s.value ? JSON.parse(s.value) : [];
+    }catch(e){ students = []; }
+    try{
+      var r = await window.storage.get("records", true);
+      records = r && r.value ? JSON.parse(r.value) : [];
+    }catch(e){ records = []; }
+    dataLoaded = true;
+  }
+  async function saveStudents(){
+    try{
+      await window.storage.set("students", JSON.stringify(students), true);
+    }catch(e){ showToast("บันทึกรายชื่อไม่สำเร็จ ลองใหม่อีกครั้ง", true); }
+  }
+  async function saveRecords(){
+    try{
+      await window.storage.set("records", JSON.stringify(records), true);
+    }catch(e){ showToast("บันทึกข้อมูลไม่สำเร็จ ลองใหม่อีกครั้ง", true); }
+  }
+
+  // ---------------- login ----------------
+  document.getElementById("loginBtn").addEventListener("click", doLogin);
+  document.getElementById("loginPass").addEventListener("keydown", function(e){ if(e.key === "Enter") doLogin(); });
+  document.getElementById("loginUser").addEventListener("keydown", function(e){ if(e.key === "Enter") doLogin(); });
+
+  function doLogin(){
+    var u = document.getElementById("loginUser").value.trim();
+    var p = document.getElementById("loginPass").value;
+    var err = document.getElementById("loginError");
+    if(u === AUTH_USER && p === AUTH_PASS){
+      err.style.display = "none";
+      isLoggedIn = true;
+      document.getElementById("loginWrap").style.display = "none";
+      document.getElementById("app-shell").style.display = "flex";
+      boot();
+    } else {
+      err.style.display = "block";
+    }
+  }
+
+  document.getElementById("logoutBtn").addEventListener("click", function(){
+    isLoggedIn = false;
+    document.getElementById("app-shell").style.display = "none";
+    document.getElementById("loginWrap").style.display = "flex";
+    document.getElementById("loginPass").value = "";
+    document.getElementById("loginUser").value = "";
+  });
+
+  // ---------------- tabs ----------------
+  var navItems = document.querySelectorAll(".nav-item");
+  navItems.forEach(function(item){
+    item.addEventListener("click", function(){
+      navItems.forEach(function(n){ n.classList.remove("active"); });
+      item.classList.add("active");
+      document.querySelectorAll(".panel").forEach(function(p){ p.classList.remove("active"); });
+      document.getElementById("panel-" + item.dataset.tab).classList.add("active");
+      if(item.dataset.tab === "history") renderHistory();
+      if(item.dataset.tab === "students") renderStudents();
+      if(item.dataset.tab === "stats") renderStats();
+      if(item.dataset.tab === "checkin") renderTodayList();
+    });
+  });
+
+  // ---------------- clock ----------------
+  function tickClock(){
+    var d = new Date();
+    var el = document.getElementById("clockPill");
+    if(el) el.textContent = pad(d.getHours())+":"+pad(d.getMinutes())+":"+pad(d.getSeconds());
+  }
+  setInterval(tickClock, 1000);
+
+  // ---------------- check-in panel ----------------
+  var ciName = document.getElementById("ciName");
+  var ciDate = document.getElementById("ciDate");
+  var ciTime = document.getElementById("ciTime");
+  var ciPreview = document.getElementById("ciPreview");
+  var timeTouched = false;
+
+  ciName.addEventListener("input", function(){
+    if(!timeTouched){
+      ciTime.value = nowHM();
+    }
+    if(!ciDate.value) ciDate.value = todayISO();
+    updatePreview();
+  });
+  ciTime.addEventListener("input", function(){ timeTouched = true; updatePreview(); });
+  ciDate.addEventListener("input", updatePreview);
+
+  function updatePreview(){
+    var name = ciName.value.trim();
+    if(!name || !ciDate.value || !ciTime.value){
+      ciPreview.innerHTML = "จะบันทึกว่า: —";
+      return;
+    }
+    ciPreview.innerHTML = "จะบันทึกว่า: <b>" + escapeHtml(name) + "</b> มาสายวันที่ <b>" + thaiDateShort(ciDate.value) + "</b> เวลา <b>" + ciTime.value + " น.</b>";
+  }
+
+  function refreshStudentDatalist(){
+    var dl = document.getElementById("studentNames");
+    dl.innerHTML = students.map(function(s){
+      return '<option value="' + escapeHtml(s.name) + '">';
+    }).join("");
+  }
+
+  document.getElementById("ciSubmit").addEventListener("click", async function(){
+    var name = ciName.value.trim();
+    if(!name){ showToast("กรุณาพิมพ์ชื่อนักเรียน", true); ciName.focus(); return; }
+    if(!ciDate.value){ showToast("กรุณาเลือกวันที่", true); return; }
+    if(!ciTime.value){ showToast("กรุณาเลือกเวลา", true); return; }
+
+    var btn = this;
+    btn.disabled = true;
+
+    var rec = {
+      id: uid(),
+      name: name,
+      date: ciDate.value,
+      time: ciTime.value,
+      createdAt: new Date().toISOString()
+    };
+    records.push(rec);
+    await saveRecords();
+
+    // if this name isn't in the roster yet, don't force-add automatically —
+    // just let the user know so the list stays intentional.
+    var known = students.some(function(s){ return s.name === name; });
+
+    ciName.value = "";
+    timeTouched = false;
+    ciTime.value = nowHM();
+    updatePreview();
+    renderTodayList();
+    btn.disabled = false;
+
+    showToast(known ? "บันทึกมาสายเรียบร้อย" : "บันทึกแล้ว (ยังไม่มีชื่อนี้ในรายชื่อนักเรียน)");
+  });
+
+  function renderTodayList(){
+    var today = todayISO();
+    var list = records.filter(function(r){ return r.date === today; })
+      .sort(function(a,b){ return a.time.localeCompare(b.time); });
+    var wrap = document.getElementById("todayList");
+    var label = document.getElementById("todayCountLabel");
+
+    if(list.length === 0){
+      label.textContent = "ยังไม่มีรายการวันนี้";
+      wrap.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M9 12l2 2 4-4"/></svg><p>วันนี้ยังไม่มีนักเรียนมาสาย</p></div>';
+      return;
+    }
+    label.textContent = "วันนี้มาสายทั้งหมด " + list.length + " คน";
+    var rows = list.map(function(r){
+      return '<tr>' +
+        '<td data-label="ชื่อ">' + escapeHtml(r.name) + '</td>' +
+        '<td data-label="เวลา"><span class="badge-late">' + r.time + ' น.</span></td>' +
+        '<td data-label=""><div class="row-actions"><button class="icon-btn" data-del="' + r.id + '" title="ลบรายการ">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>' +
+        '</button></div></td>' +
+      '</tr>';
+    }).join("");
+    wrap.innerHTML = '<table><thead><tr><th>ชื่อ</th><th>เวลา</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
+    wrap.querySelectorAll("[data-del]").forEach(function(btn){
+      btn.addEventListener("click", function(){ deleteRecord(btn.dataset.del); });
+    });
+  }
+
+  async function deleteRecord(id){
+    if(!confirm("ลบรายการนี้หรือไม่?")) return;
+    records = records.filter(function(r){ return r.id !== id; });
+    await saveRecords();
+    renderTodayList();
+    renderHistory();
+    renderStats();
+    showToast("ลบรายการแล้ว");
+  }
+
+  // ---------------- history panel ----------------
+  var hSearch = document.getElementById("hSearch");
+  var hFrom = document.getElementById("hFrom");
+  var hTo = document.getElementById("hTo");
+  [hSearch, hFrom, hTo].forEach(function(el){ el.addEventListener("input", renderHistory); });
+  document.getElementById("hClear").addEventListener("click", function(){
+    hSearch.value = ""; hFrom.value = ""; hTo.value = "";
+    renderHistory();
+  });
+
+  function renderHistory(){
+    var wrap = document.getElementById("historyTableWrap");
+    var q = hSearch.value.trim().toLowerCase();
+    var from = hFrom.value, to = hTo.value;
+
+    var filtered = records.filter(function(r){
+      if(q && r.name.toLowerCase().indexOf(q) === -1) return false;
+      if(from && r.date < from) return false;
+      if(to && r.date > to) return false;
+      return true;
+    }).sort(function(a,b){
+      if(a.date !== b.date) return b.date.localeCompare(a.date);
+      return b.time.localeCompare(a.time);
+    });
+
+    if(filtered.length === 0){
+      wrap.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M9 9h.01M15 9h.01M8 15c1.2 1 2.6 1.5 4 1.5s2.8-.5 4-1.5"/></svg><p>ไม่พบประวัติที่ตรงกับเงื่อนไข</p></div>';
+      return;
+    }
+
+    var rows = filtered.map(function(r){
+      return '<tr>' +
+        '<td data-label="ชื่อ">' + escapeHtml(r.name) + '</td>' +
+        '<td data-label="วันที่">' + thaiDateShort(r.date) + '</td>' +
+        '<td data-label="เวลา"><span class="badge-late">' + r.time + ' น.</span></td>' +
+        '<td data-label=""><div class="row-actions"><button class="icon-btn" data-del="' + r.id + '" title="ลบรายการ">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>' +
+        '</button></div></td>' +
+      '</tr>';
+    }).join("");
+
+    wrap.innerHTML = '<p class="card-sub" style="margin-bottom:12px;">พบ ' + filtered.length + ' รายการ</p>' +
+      '<table><thead><tr><th>ชื่อ</th><th>วันที่</th><th>เวลา</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
+    wrap.querySelectorAll("[data-del]").forEach(function(btn){
+      btn.addEventListener("click", function(){ deleteRecord(btn.dataset.del); });
+    });
+  }
+
+  // ---------------- students panel ----------------
+  document.getElementById("stSubmit").addEventListener("click", async function(){
+    var name = document.getElementById("stName").value.trim();
+    var room = document.getElementById("stRoom").value.trim();
+    var no = document.getElementById("stNo").value.trim();
+    if(!name){ showToast("กรุณากรอกชื่อนักเรียน", true); return; }
+    if(students.some(function(s){ return s.name === name; })){
+      showToast("มีชื่อนี้ในรายชื่ออยู่แล้ว", true);
+      return;
+    }
+    students.push({ id: uid(), name: name, room: room, no: no });
+    await saveStudents();
+    document.getElementById("stName").value = "";
+    document.getElementById("stRoom").value = "";
+    document.getElementById("stNo").value = "";
+    refreshStudentDatalist();
+    renderStudents();
+    showToast("เพิ่มนักเรียนเรียบร้อย");
+  });
+
+  document.getElementById("stSearch").addEventListener("input", renderStudents);
+
+  function lateCountFor(name){
+    var c = 0;
+    for(var i=0;i<records.length;i++){ if(records[i].name === name) c++; }
+    return c;
+  }
+
+  function renderStudents(){
+    var wrap = document.getElementById("studentListWrap");
+    var q = document.getElementById("stSearch").value.trim().toLowerCase();
+    var list = students.filter(function(s){ return !q || s.name.toLowerCase().indexOf(q) !== -1; })
+      .sort(function(a,b){ return a.name.localeCompare(b.name, "th"); });
+
+    if(list.length === 0){
+      wrap.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M17 20v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="10" cy="7" r="4"/></svg><p>ยังไม่มีรายชื่อนักเรียน — เพิ่มรายชื่อได้ที่ด้านบน</p></div>';
+      return;
+    }
+
+    wrap.innerHTML = list.map(function(s){
+      var meta = [];
+      if(s.room) meta.push("ห้อง " + s.room);
+      if(s.no) meta.push("เลขที่ " + s.no);
+      var count = lateCountFor(s.name);
+      return '<div class="student-row">' +
+        '<div class="student-info"><div class="name">' + escapeHtml(s.name) +
+          (count > 0 ? '<span class="count-chip">มาสาย ' + count + ' ครั้ง</span>' : '') +
+        '</div><div class="meta">' + (meta.length ? escapeHtml(meta.join(" · ")) : "ยังไม่ระบุห้อง/เลขที่") + '</div></div>' +
+        '<button class="icon-btn" data-delst="' + s.id + '" title="ลบนักเรียน">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>' +
+        '</button></div>';
+    }).join("");
+
+    wrap.querySelectorAll("[data-delst]").forEach(function(btn){
+      btn.addEventListener("click", async function(){
+        var s = students.find(function(x){ return x.id === btn.dataset.delst; });
+        if(!s) return;
+        if(!confirm('ลบ "' + s.name + '" ออกจากรายชื่อนักเรียนหรือไม่? (ประวัติมาสายเดิมจะยังคงอยู่)')) return;
+        students = students.filter(function(x){ return x.id !== s.id; });
+        await saveStudents();
+        refreshStudentDatalist();
+        renderStudents();
+        showToast("ลบนักเรียนแล้ว");
+      });
+    });
+  }
+
+  // ---------------- stats panel ----------------
+  function renderStats(){
+    var totalStudents = students.length;
+    var totalRecords = records.length;
+    var today = todayISO();
+    var todayCount = records.filter(function(r){ return r.date === today; }).length;
+    var uniqueLateStudents = {};
+    records.forEach(function(r){ uniqueLateStudents[r.name] = true; });
+
+    document.getElementById("statGrid").innerHTML =
+      '<div class="stat-box"><div class="stat-num">' + totalStudents + '</div><div class="stat-label">นักเรียนในรายชื่อ</div></div>' +
+      '<div class="stat-box orange"><div class="stat-num">' + totalRecords + '</div><div class="stat-label">รายการมาสายทั้งหมด</div></div>' +
+      '<div class="stat-box"><div class="stat-num">' + todayCount + '</div><div class="stat-label">มาสายวันนี้</div></div>' +
+      '<div class="stat-box orange"><div class="stat-num">' + Object.keys(uniqueLateStudents).length + '</div><div class="stat-label">จำนวนคนที่เคยมาสาย</div></div>';
+
+    var counts = {};
+    records.forEach(function(r){ counts[r.name] = (counts[r.name] || 0) + 1; });
+    var arr = Object.keys(counts).map(function(name){ return { name: name, count: counts[name] }; })
+      .sort(function(a,b){ return b.count - a.count; });
+
+    var wrap = document.getElementById("statTableWrap");
+    if(arr.length === 0){
+      wrap.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 3v18h18"/></svg><p>ยังไม่มีข้อมูลสถิติ</p></div>';
+      return;
+    }
+    var rows = arr.map(function(item, idx){
+      return '<tr>' +
+        '<td data-label="ลำดับ">' + (idx+1) + '</td>' +
+        '<td data-label="ชื่อ">' + escapeHtml(item.name) + '</td>' +
+        '<td data-label="จำนวนครั้ง"><span class="badge-late">' + item.count + ' ครั้ง</span></td>' +
+      '</tr>';
+    }).join("");
+    wrap.innerHTML = '<table><thead><tr><th>ลำดับ</th><th>ชื่อ</th><th>จำนวนครั้ง</th></tr></thead><tbody>' + rows + '</tbody></table>';
+  }
+
+  // ---------------- boot ----------------
+  async function boot(){
+    document.getElementById("loadingBlock").style.display = "block";
+    document.querySelectorAll(".panel").forEach(function(p){ p.classList.remove("active"); });
+
+    await loadData();
+
+    document.getElementById("loadingBlock").style.display = "none";
+    document.getElementById("panel-checkin").classList.add("active");
+
+    ciDate.value = todayISO();
+    ciTime.value = nowHM();
+    tickClock();
+
+    refreshStudentDatalist();
+    renderTodayList();
+    renderHistory();
+    renderStudents();
+    renderStats();
+  }
+})();
+</script>
+</body>
+</html>
